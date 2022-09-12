@@ -1,38 +1,49 @@
 import os
 import subprocess
-from funcs import ptime, logerror
+from funcs import funcs
 path = ""
-py_path = ""
-import json
+
+# Get system path
+ost = ''
+while ost != "\\"or ost != "/":
+  ost = input("\nIs this being run on windows, or linux? ")
+  if ost.lower() == "windows":
+    ost = "\\"
+    break
+  elif ost.lower() == "linux":
+    ost = "/"
+    break
+  else:
+    print("Input failed.")
+  
+inp = os.path.dirname(os.path.abspath(__file__))
+
+os.system("clear")
+inp = inp + ost
+inp = inp[0].upper() + inp[1:]
+fncs = funcs(inp+"settings.json") #setup funcs
+
+fncs.dprint(inp)
+path = inp
 
 def imports():
-  with open(f"{path}settings.json","r") as fp:
-    settings = json.load(fp)
-    py_path1 = ''
-    if settings["os"] == 0:
-      py_path1 = "python3"
-    else:
-      py_path1 = settings["win-py"]
-    global py_path
-    py_path = py_path1
   try:
-    x = subprocess.check_output(py_path+" --version",shell=True)
+    #x = subprocess.check_output("python3 --version",shell=True)
+    x = subprocess.check_output("python3.10 --version",shell=True)
   except subprocess.CalledProcessError as err:
-    import funcs
-    funcs.logerror(err, path=path)
+    #fncs.log(err)
+    pass
   try:
     x = x.split(" ")
     y = x[1].split(".")
     if int(y[1]) >= 6:
-      os.system(py_path+" -m pip install poetry")
-      os.system(py_path+" -m poetry install")
+      os.system("python3 -m pip install -r requirements.txt")
   except Exception as err:
     str(err)
-    os.system(py_path+" -m pip install poetry")
-    os.system(py_path+" -m poetry install")
+    os.system("python -m pip install -r requirements.txt")
   finally:
     with open(f"{path}log.txt","w") as fp:
-      fp.write(f"[{ptime()}] Finished Install Packages and created setup_done.yay file.\n")
+      fp.write(f"[{fncs.ptime()}] Finished Install Packages and created setup_done.yay file.\n")
 
 def replace_line(file_name, line_num, text): # Yes i know this is a dumb way to solve it but it works
     lines = open(file_name, 'r').readlines()
@@ -43,29 +54,8 @@ def replace_line(file_name, line_num, text): # Yes i know this is a dumb way to 
 
 def fix_files():
   os.system("clear")
-  ost = ''
-  while ost != "\\"or ost != "/":
-    ost = input("\nIs this being run on windows, or linux? ")
-    if ost.lower() == "windows":
-      ost = "\\"
-      break
-    elif ost.lower() == "linux":
-      ost = "/"
-      break
-    else:
-      print("Input failed.")
-  
-  inp = os.path.dirname(os.path.abspath(__file__))
 
-  os.system("clear")
-  inp = inp + ost
-  inp = inp[0].upper() + inp[1:]
-  # Replace \ with \\ in inp
-  inp = inp.replace("\\","\\\\")
-  print(inp)
-  global path
-  path = inp
-
+  global inp
   my_file = os.path.exists(f"{inp}setup_done.yay")
   if my_file:
     print("Packages Already Imported, Exiting!")
@@ -76,10 +66,9 @@ def fix_files():
     os.system("clear")
   print("Updating file paths...")
   inp = r"{}".format(inp)
-  replace_line(f"{inp}.env",1,r'PATH={}settings.json'.format(inp))
-  print(inp)
+  replace_line(f"{inp}.env",0,r'{}PATH={}settings.json{}'.format("\r",inp,"\n"))
+  fncs.dprint(inp)
   replace_line(f"{inp}settings.json",7,r'  "home-dir": "{}",{}'.format(inp,"\n"))
-  replace_line(f"{inp}settings.json",14,r'  "py-path": "{}",{}'.format(py_path,"\n"))
 
 def settings():
   with open(f"{path}settings.json","r") as fp:
@@ -114,14 +103,14 @@ def settings():
   text = "\n".join(arr)
   if input(f"{text}\n\nSave? (Y/N)").lower() == "y":
     with open(f"{path}settings.json","w") as fp:
-      fp.write(text)
+      fp.write("\r"+text+"\n")
 
 if __name__ == "__main__":
   fix_files()
-  inp2 = input(f"\nSetup is Done at {ptime()}!\nPlease change the settings.json file to suit your needs or type 'y' to start editing it now.")
-  if inp2 == "y":
+  inp2 = input(f"\nSetup is Done at {fncs.ptime()}!\nPlease change the settings.json file to suit your needs or type 'y' to start editing it now.")
+  if inp2 != "":
     settings()
   
   with open(f"{path}log.txt","w") as fp:
-    logerror("Finished Setup with no errors.")
+    fp.write(f"[{fncs.ptime()}] Finished Setup with no errors.\n")
   os.system("clear")

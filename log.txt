@@ -1,2 +1,6 @@
-[2022 5/2 9:46:48] Finished Install Packages and created setup_done.yay file.
-[2022 5/2 9:57:30] Improper token has been passed.
+[2022 6/26 22:7:19] Finished Setup with no errors.
+[2022 6/26 22:21:30] pootis
+[2022 6/27 19:38:53] Startup has been called, True: testing and True: debugging
+[2022 6/27 19:53:48] Startup has been called, True: testing and True: debugging
+[2022 7/4 17:45:35] Startup has been called, True: testing and True: debugging
+[2022 8/3 17:35:24] Startup has been called, False: testing and True: debugging
